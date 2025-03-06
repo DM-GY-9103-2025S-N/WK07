@@ -1,16 +1,32 @@
 #include <Servo.h>
 
-int inPin = A0;
+int servoAngle;
+int servoVelocity;
+long long lastChange;
 
 Servo mServo;
 
 void setup() {
   Serial.begin(57600);
   mServo.attach(3);
+
+  servoAngle = 0;
+  servoVelocity = 5;
+
+  lastChange = 0;
 }
 
 void loop() {
-  int a0Val = analogRead(inPin);
+  if (millis() - lastChange > 100) {
+    servoAngle += servoVelocity;
 
-  // TODO: use a0Val on servo output
+    if (servoAngle > 180 || servoAngle < 1) {
+      servoVelocity = -1 * servoVelocity;
+    }
+
+    lastChange = millis();
+  }
+
+  // write the angle to the motor
+  mServo.write(servoAngle);
 }
